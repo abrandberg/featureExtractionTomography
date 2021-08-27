@@ -47,8 +47,11 @@ fprintf(ctrl.formatSpecMsgL2,['plotMode is ' num2str(ctrl.plotMode)]);
 fprintf(ctrl.formatSpecMsgL2,['voxelSize is ' num2str(hyperParameters.voxelSize)]);
 
 
-segmentedInputFieldFile = {'data\Sample_4.nii';
-                           'data\Sample_6_Third_Revision.nii'};
+segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
+                           'data\Sample_9.nii'}; %'data\Sample_6_Third_Revision.nii'
+                       
+% segmentedInputFieldFile = {'data\Sample_9.nii'; % Sample_4.nii
+%                            'data\Sample_6_Third_Revision.nii'}; %'data\Sample_6_Third_Revision.nii'
 
 scanNames               =  {'Sample 4'; 'Sample 6'; 'Sample 9'};
 % To be displayed in the legends of plots if ctrl.plotMode == true
@@ -230,4 +233,4 @@ end
 
 
 
-
+a = saveVol(:,1); b = saveVol(:,2);
