@@ -76,7 +76,9 @@ function fiberResult = findSegmentedCrossSections(fiberResult,ctrl,hyperParamete
 % date : 2021-08-25
 % 
 
-
+if ctrl.plotMode
+    D = figure('color','w','units','centimeters','OuterPosition',[10 10 2*16 16]);
+end
 
 numelFibers = numel(fiberResult);
 
@@ -214,10 +216,8 @@ for tLoop = 1:numelFibers
             legend('location','best','interpreter',ctrl.interpreter)
             hold off
                     
-                    
-%             rangeW1 = [min(score(scoreSelect,1)) max(score(scoreSelect,1))];
-            rangeW2 = 10*[-1 1];%[min(score(scoreSelect,2)) max(score(scoreSelect,2))];
-            rangeW3 = 10*[-1 1];%[min(score(scoreSelect,3)) max(score(scoreSelect,3))];
+            rangeW2 = 10*[-1 1];
+            rangeW3 = 10*[-1 1];
 
             leftBottom  = [discAxis(kLoop) 100+fiberResult(tLoop).centerline(kLoop,2) fiberResult(tLoop).centerline(kLoop,3)] +[0 rangeW2(1) rangeW3(1)]*tempRotMatrix';
             rightBottom = [discAxis(kLoop) 100+fiberResult(tLoop).centerline(kLoop,2) fiberResult(tLoop).centerline(kLoop,3)] +[0 rangeW2(2) rangeW3(1)]*tempRotMatrix';
@@ -227,6 +227,10 @@ for tLoop = 1:numelFibers
             patch('Faces',[1 2 3 4],'Vertices',[leftBottom ; rightBottom ; rightTop ; leftTop],'FaceColor','red');
             hold off
             pause(1)
+            
+            if ctrl.exportPlots
+               print([ctrl.saveDir filesep 'crossSectionResult_' sprintf('%d',tLoop)],'-dpng','-r800') 
+            end
         end
 
     end
