@@ -28,7 +28,7 @@ ctrl.saveDir                = ['plots' filesep];
 
 
 % Hyper parameters
-hyperParameters.discSteps               = 10;
+hyperParameters.discSteps               = 50;
 % Number of midpoints to calculate along the length of the fiber.
 hyperParameters.voxelSize               = 0.7; 
 % Scaling factor from voxels to um.
@@ -66,6 +66,7 @@ if ctrl.plotMode
     A = figure();
     B = figure('color','w','units','centimeters','OuterPosition',[10 10 2*16 16]);
     C = figure();
+    D = figure();
 end
 
 for aLoop = 1:numel(segmentedInputFieldFile)
@@ -107,12 +108,23 @@ for aLoop = 1:numel(segmentedInputFieldFile)
     % Extract cross-sectional properties
     
     for bLoop = 1:numel(fiberResult)
-        fiberResult(aLoop).wMean = hyperParameters.voxelSize * mean([fiberResult(aLoop).w(fiberResult(aLoop).w>0)]);
-        fiberResult(aLoop).hMean = hyperParameters.voxelSize * mean([fiberResult(aLoop).h(fiberResult(aLoop).h>0)]);
-        fiberResult(aLoop).tMean = hyperParameters.voxelSize * mean([fiberResult(aLoop).t(fiberResult(aLoop).t>-eps)]);
+        fiberResult(bLoop).AMean = hyperParameters.voxelSize.^2 * median([fiberResult(bLoop).A(fiberResult(bLoop).A>0)]); % OBS OBS OBS
+        fiberResult(bLoop).wMean = hyperParameters.voxelSize * mean([fiberResult(bLoop).w(fiberResult(bLoop).w>0)]);
+        fiberResult(bLoop).hMean = hyperParameters.voxelSize * mean([fiberResult(bLoop).h(fiberResult(bLoop).h>0)]);
+        fiberResult(bLoop).tMean = hyperParameters.voxelSize * mean([fiberResult(bLoop).t(fiberResult(bLoop).t>-eps)]);
     end
     
     if ctrl.plotMode
+        
+        figure(D)
+        histogram([fiberResult.AMean],                             ...
+                  'normalization','probability','edgecolor',ctrl.colorArray(aLoop,:), ...
+                  ctrl.histogramInstructions{:})
+        hold on
+        xline(mean([fiberResult.AMean]),'--','linewidth',1.5,'color',ctrl.colorArray(aLoop,:))
+        xline(median([fiberResult.AMean]),'-.','linewidth',1.5,'color',ctrl.colorArray(aLoop,:))
+        
+        
         figure(B)
         subplot(2,3,1)
         histogram([fiberResult.wMean],linspace(0,100,25),                             ...
@@ -139,7 +151,7 @@ for aLoop = 1:numel(segmentedInputFieldFile)
             end
         end
     end
-    
+
     datasetSave(aLoop).data = fiberResult;
     % Save results for this iteration of aLoop to a bigger struct for
     % comparison between files.
@@ -226,11 +238,47 @@ if ctrl.plotMode
     ylabel([scanNames{idxToCompareTwo} ' Voxels per fiber'],'interpreter',ctrl.interpreter)
     set(gca,'TickLabelInterpreter',ctrl.interpreter)
     if ctrl.exportPlots
-        print('systematicDiffQuestionMark','-dpng','-r1200')
+        print('systematicDiffVolumeQuestionMark','-dpng','-r1200')
     end
 end
 
-
-
-
 a = saveVol(:,1); b = saveVol(:,2);
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AREA INVESTIGATION
+ctrl.plotMode = 1;
+if ctrl.plotMode
+    figure;
+end
+for tLoop = 1:size(idxMapping,1)
+    
+    selAreaOne = [datasetSave(idxToCompareOne).data.idx] == idxMapping(tLoop,1);
+    selAreaTwo = [datasetSave(idxToCompareTwo).data.idx] == idxMapping(tLoop,2);
+    
+    saveArea(tLoop,1) = datasetSave(idxToCompareOne).data(selAreaOne).AMean;
+    saveArea(tLoop,2) = datasetSave(idxToCompareTwo).data(selAreaTwo).AMean;
+        
+end
+
+if ctrl.plotMode
+    figure;
+    plot(saveArea(:,1),saveArea(:,2),'ow','MarkerFaceColor','k')
+    hold on
+    plot([0 max(saveArea(:,1))],[0 max(saveArea(:,1))],'k--')
+    xlabel([scanNames{idxToCompareOne} ' Mean area per fiber'],'interpreter',ctrl.interpreter)
+    ylabel([scanNames{idxToCompareTwo} ' Mean area per fiber'],'interpreter',ctrl.interpreter)
+    set(gca,'TickLabelInterpreter',ctrl.interpreter)
+    if ctrl.exportPlots
+        print('systematicDiffAreaQuestionMark','-dpng','-r1200')
+    end
+end
+
+cp = saveArea(:,1);
+dp = saveArea(:,2);
+
+

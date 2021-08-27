@@ -144,10 +144,10 @@ for tLoop = 1:numelFibers
                 % Fit the cross-section to a solid and hollow rectangle. Return whichever seems
                 % better.
 
-
-                fiberResult(tLoop).w(kLoop) = w;
-                fiberResult(tLoop).h(kLoop) = h;
-                fiberResult(tLoop).t(kLoop) = t;
+                fiberResult(tLoop).A(kLoop-1) = sum(inVecX ~= 0.0);
+                fiberResult(tLoop).w(kLoop-1) = w;
+                fiberResult(tLoop).h(kLoop-1) = h;
+                fiberResult(tLoop).t(kLoop-1) = t;
 
                 if ctrl.plotMode
                     
@@ -194,14 +194,14 @@ for tLoop = 1:numelFibers
                     
                 end
             else
-                fiberResult(tLoop).w(kLoop) = nan;
-                fiberResult(tLoop).h(kLoop) = nan;
-                fiberResult(tLoop).t(kLoop) = nan;
+                fiberResult(tLoop).w(kLoop-1) = nan;
+                fiberResult(tLoop).h(kLoop-1) = nan;
+                fiberResult(tLoop).t(kLoop-1) = nan;
             end
         else
-            fiberResult(tLoop).w(kLoop) = nan;
-            fiberResult(tLoop).h(kLoop) = nan;
-            fiberResult(tLoop).t(kLoop) = nan;
+            fiberResult(tLoop).w(kLoop-1) = nan;
+            fiberResult(tLoop).h(kLoop-1) = nan;
+            fiberResult(tLoop).t(kLoop-1) = nan;
         end
 
         if ctrl.plotMode
@@ -211,10 +211,22 @@ for tLoop = 1:numelFibers
             plot([fiberResult(tLoop).h],'sr-','DisplayName','Height')
             plot([fiberResult(tLoop).t],'kd-','DisplayName','Wall thickness')
             xlabel('Segment idx','interpreter',ctrl.interpreter)
-            ylabel('Property value [$\mu$m]','interpreter',ctrl.interpreter)
+            ylabel('Property value [voxel]','interpreter',ctrl.interpreter)
             set(gca,'TickLabelInterpreter',ctrl.interpreter)
             legend('location','best','interpreter',ctrl.interpreter)
             hold off
+            
+            
+            subplot(2,3,6)
+             plot([fiberResult(tLoop).A],'bo-','DisplayName','Area')
+            hold on
+            xlabel('Segment idx','interpreter',ctrl.interpreter)
+            ylabel('Area [voxel]$^2$','interpreter',ctrl.interpreter)
+            set(gca,'TickLabelInterpreter',ctrl.interpreter)
+            legend('location','best','interpreter',ctrl.interpreter)
+            hold off
+            
+            
                     
             rangeW2 = 10*[-1 1];
             rangeW3 = 10*[-1 1];
