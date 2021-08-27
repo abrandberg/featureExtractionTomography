@@ -100,15 +100,15 @@ for tLoop = 2:numelFibers
     
     
     if ctrl.plotMode
-        plot3(score(:,1),score(:,2),score(:,3),'k.')
+        plot3(score(:,1),score(:,2),score(:,3),'k.','DisplayName','Raw data')
         hold on
-        title(['S vals = [' num2str(Svals(1)) ' / ' num2str(Svals(2)) ' / ' num2str(Svals(3)) ' ]'])
-        if tLoop == 2
-            xlabel('$x$', 'interpreter',ctrl.interpreter)
-            ylabel('$y$', 'interpreter',ctrl.interpreter)
-            zlabel('$z$', 'interpreter',ctrl.interpreter)
-        end
+        title(['S vals = [' num2str(Svals(1)) ' / ' num2str(Svals(2)) ' / ' num2str(Svals(3)) ' ]'], ...
+              'interpreter',ctrl.interpreter)
+        xlabel('Global $x$', 'interpreter',ctrl.interpreter)
+        ylabel('Global $y$', 'interpreter',ctrl.interpreter)
+        zlabel('Global $z$', 'interpreter',ctrl.interpreter)
         axis equal
+        set(gca,'TickLabelInterpreter',ctrl.interpreter)
     end
     
     rangeV1         = [min(score(:,1)) max(score(:,1))];
@@ -149,9 +149,9 @@ for tLoop = 2:numelFibers
         fiberResult(tLoop).centerline(cLoop,:) = meanTemp;
         fiberResult(tLoop).localCoordinates    = score;
         
-        if ctrl.plotMode
-            plot3(meanTemp(1),meanTemp(2)+100,meanTemp(3),'ks')
-        end
+%         if ctrl.plotMode % Diagnostic plot for each step inside loop
+%             plot3(meanTemp(1),meanTemp(2)+100,meanTemp(3),'ks')
+%         end
     end
     
     %%% Bookkeeping
@@ -159,7 +159,9 @@ for tLoop = 2:numelFibers
     % Find and delete parts that did not contain enough points
     
     if ctrl.plotMode
-        plot3(fiberResult(tLoop).centerline(:,1),fiberResult(tLoop).centerline(:,2)+200,fiberResult(tLoop).centerline(:,3),'-m')
+        plot3(fiberResult(tLoop).centerline(:,1),fiberResult(tLoop).centerline(:,2)+100,fiberResult(tLoop).centerline(:,3), ...
+              '-sk','DisplayName','Centerline')
+%         legend('location','best','interpreter',ctrl.interpreter)
         pause(0.5)
         hold off
     end
