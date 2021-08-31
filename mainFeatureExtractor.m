@@ -50,8 +50,11 @@ fprintf(ctrl.formatSpecMsgL2,['voxelSize is ' num2str(hyperParameters.voxelSize)
 segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
                            'data\Sample_9.nii'}; %'data\Sample_6_Third_Revision.nii'
                        
+% segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
+%                            'data\Sample_4.nii'}; %'data\Sample_6_Third_Revision.nii'
+%                        
 % segmentedInputFieldFile = {'data\Sample_9.nii'; % Sample_4.nii
-%                            'data\Sample_6_Third_Revision.nii'}; %'data\Sample_6_Third_Revision.nii'
+%                            'data\Sample_4.nii'}; %'data\Sample_6_Third_Revision.nii'
 
 scanNames               =  {'Sample 4'; 'Sample 6'; 'Sample 9'};
 % To be displayed in the legends of plots if ctrl.plotMode == true
@@ -263,6 +266,9 @@ for tLoop = 1:size(idxMapping,1)
     saveArea(tLoop,1) = datasetSave(idxToCompareOne).data(selAreaOne).AMean;
     saveArea(tLoop,2) = datasetSave(idxToCompareTwo).data(selAreaTwo).AMean;
         
+    
+    saveWidth(tLoop,1) = datasetSave(idxToCompareOne).data(selAreaOne).wMean;
+    saveWidth(tLoop,2) = datasetSave(idxToCompareTwo).data(selAreaTwo).wMean;
 end
 
 if ctrl.plotMode
@@ -281,4 +287,18 @@ end
 cp = saveArea(:,1);
 dp = saveArea(:,2);
 
+if ctrl.plotMode
+    figure;
+    plot(saveWidth(:,1),saveWidth(:,2),'ow','MarkerFaceColor','k')
+    hold on
+    plot([0 max(saveWidth(:,1))],[0 max(saveWidth(:,1))],'k--')
+    xlabel([scanNames{idxToCompareOne} ' Mean w per fiber'],'interpreter',ctrl.interpreter)
+    ylabel([scanNames{idxToCompareTwo} ' Mean w per fiber'],'interpreter',ctrl.interpreter)
+    set(gca,'TickLabelInterpreter',ctrl.interpreter)
+    if ctrl.exportPlots
+        print('systematicDiffWidthQuestionMark','-dpng','-r1200')
+    end
+end
 
+ep = saveWidth(:,1);
+fp = saveWidth(:,2);
