@@ -63,15 +63,17 @@ uniqueFibers    = unique(segmentedField);
 numelFibers     = length(uniqueFibers);
 dimOfInput      = size(segmentedField);
 
-flagsToFind     = histcounts(segmentedField,0:(numelFibers+eps));
+[flagsToFind ,xVec  ]  = histcounts(segmentedField,0:(max(uniqueFibers)+1));
 % Determine how many entries to find in "selIdx" below. Note that
 % histcounts is highly optimized and the added time is easily saved.
 
+sizeOfVoxelField = size(segmentedField);
+tCollect = [];
 for tLoop = 2:numelFibers 
     % Skip number 1 which is assumed to be the background
     
     fiberToSel = uniqueFibers(tLoop);
-    selIdx = find(segmentedField == fiberToSel,flagsToFind(tLoop));
+    selIdx = find(segmentedField == fiberToSel,flagsToFind(xVec == fiberToSel));
     % Called in this way, selIdx returns the indicies that are non-zero.
     %
     % This version is tested but 95% of the compute time is here so
@@ -84,7 +86,16 @@ for tLoop = 2:numelFibers
     % Essentially, this is the sparse representation of segmentedField,
     % with the added complication of having to keep which segment is
     % "selected" somewhere else.
-
+    
+    conditionOne = (sum(I1 == 1) + sum(I1 == sizeOfVoxelField(1)) +  ...
+                    sum(I2 == 1) + sum(I2 == sizeOfVoxelField(2)) +  ...
+                    sum(I3 == 1) + sum(I3 == sizeOfVoxelField(3)) ) ;%> ctrl.edgeThreshold
+    if conditionOne > 5000
+        tCollect = [tCollect ; tLoop];
+        continue
+    else
+%         conditionOne
+    end
     
     [~,score,~,~,Svals,centerOfMass] = pca([I1 I2 I3],'Algorithm','svd','Economy',true,'NumComponents',3);
     % Extract the three eigenvectors that
@@ -167,3 +178,4 @@ for tLoop = 2:numelFibers
     end
 end
 
+fiberResult(tCollect) = [];

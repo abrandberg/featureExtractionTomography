@@ -1,6 +1,8 @@
+function [fiberResult] = FcnFeatureExtractor(inputFile)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% mainFeatureExtractor.m
+% Functional version of mainFeatureExtractor.m
 %
 % Start here!
 %
@@ -9,8 +11,7 @@
 %
 
 % Meta instructions
-clear; close all; clc;
-format;
+% clear; close all; clc;
 format compact;
 addpath('auxFunctions')
 
@@ -47,10 +48,10 @@ fprintf(ctrl.formatSpecMsgL2,['plotMode is ' num2str(ctrl.plotMode)]);
 fprintf(ctrl.formatSpecMsgL2,['voxelSize is ' num2str(hyperParameters.voxelSize)]);
 
 
-segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
-                           'data\Sample_9.nii'}; %'data\Sample_6_Third_Revision.nii'
-segmentedInputFieldFile = {'data\S6.nii';'data\S9.nii'}; %'data\Sample_6_Third_Revision.nii'
-                       
+% segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
+%                            'data\Sample_9.nii'}; %'data\Sample_6_Third_Revision.nii'
+% segmentedInputFieldFile = {'data\S6.nii';'data\S9.nii'}; %'data\Sample_6_Third_Revision.nii'
+segmentedInputFieldFile = {inputFile};
 % segmentedInputFieldFile = {'data\Sample_6_Third_Revision.nii'; % Sample_4.nii
 %                            'data\Sample_4.nii'}; %'data\Sample_6_Third_Revision.nii'
 %                        
@@ -186,7 +187,7 @@ end
 idxToCompareOne = 1;
 idxToCompareTwo = 2;
 
-
+return
 [idxMapping] = mapIndicies(datasetSave(idxToCompareOne).data,datasetSave(idxToCompareTwo).data, ctrl);
 
 segmentedFieldOne = importSegmentedData(segmentedInputFieldFile{idxToCompareOne});
